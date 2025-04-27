@@ -1,4 +1,4 @@
-import { useState , useCallback } from 'react'
+import { useState , useCallback , useEffect , useRef} from 'react'
 
 
 function App() {
@@ -7,20 +7,31 @@ function App() {
   const [char, setChar] = useState(false)
   const [Password, setPassword] = useState("")
 
+  const passwordRef= useRef(null)
+
   const passwordGenerator = useCallback(()=>{
     let  pass=""
     let str="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     if(number) str+="1234567890"
     if(char) str+="!@#$%^&*()_+"
 
-    for (let i = 1; i <= array.length; i++) {
+    for (let i = 1; i <= length; i++) {
       let c = Math.floor(Math.random() * str.length +1)
-      pass=str.charAt(c) 
+      pass+=str.charAt(c) 
     }
     
     setPassword(pass)
 
   },[length,number,char,setPassword])
+
+  const copypasstoclipboard = useCallback(() => {
+    passwordRef.current?.select()
+    window.navigator.clipboard.writeText(Password)
+  },[Password])
+
+  useEffect(()=>{
+    passwordGenerator()
+  },[length,number,char,passwordGenerator])
 
   return (
     <>
@@ -31,10 +42,15 @@ function App() {
       
           type='text'
           value={Password}
-          className='outline-none w-full py-1 px-3 bg-white my-6 rounded-md'
+          className='outline-none w-full py-1 px-3 bg-white my-3 rounded-md'
           placeholder='password'
-          readOnly/>
-          <button className='outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0 '>copy</button>
+          readOnly
+          ref={passwordRef}
+          />
+          
+          <button 
+          onClick={copypasstoclipboard}
+          className='outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0 '>copy</button>
       </div>
       <div className='flex text-sm gap-x-2'>
          <div className='flex items-center gap-x-1'>
@@ -47,6 +63,28 @@ function App() {
               onChange={(e)=>{setLength(e.target.value)}}
               />
               <label >length : {length}</label>
+         </div>
+         <div className='flex items-center gap-x-1'>
+             <input
+             type='checkbox'
+             defaultChecked={number}
+             id='numberInput'
+             onChange={()=>{
+              setNumber((prev)=> !prev)
+               }}
+             />
+             <label htmlFor="numberInput">Numbers</label>
+         </div>
+         <div className='flex items-center gap-x-1'>
+             <input
+             type='checkbox'
+             defaultChecked={char}
+             id='charInput'
+             onChange={()=>{
+              setChar((prev)=> !prev)
+               }}
+             />
+             <label htmlFor="charInput">Characters</label>
          </div>
       </div>
     </div>
