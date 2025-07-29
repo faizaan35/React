@@ -18,7 +18,6 @@ export {
     Header,
     Footer,
     Container,
-    Container,
     Logo,
     LogoutBtn,
     Button, 
@@ -28,4 +27,6 @@ export {
     PostForm,
     PostCard,
     AuthLayout,
+    RTE,
+    Select,
 }

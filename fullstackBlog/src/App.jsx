@@ -4,6 +4,8 @@ import authService from './appwrite/auth'
 import {login , logout} from './store/authSlice'
 import Header from './components/header/header'
 import Footer from './components/footer/footer'
+import { Outlet } from 'react-router-dom'
+
 import './App.css'
 
 function App() {
@@ -14,6 +16,7 @@ function App() {
   useEffect(()=>{ 
     authService.getCurrentUser()
     .then((userData)=>{
+      console.log("User in App.jsx", userData)
       if(userData)
         {
           dispatch(login(userData))
@@ -30,7 +33,7 @@ function App() {
       <div className='w-full block'>
         <Header/>
         <main>
-          {/* outlet here */}
+          <Outlet />
         </main>
         <Footer/>
       </div>

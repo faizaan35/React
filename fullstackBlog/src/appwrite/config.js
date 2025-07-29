@@ -1,4 +1,4 @@
-import conf from '../conf.js'
+import conf from '../conf/conf.js'
 import {Client, Databases,  Storage , Query , ID} from "appwrite"
 
 export class Service {
@@ -34,6 +34,7 @@ export class Service {
              )           
         } catch (error) {
             console.log("appwrite service :: createPost :: error" , error);
+            return false
         }
     }
 
@@ -55,6 +56,7 @@ export class Service {
             
         } catch (error) {
             console.log("appwrite service :: updatePost :: error" , error);
+            return false
         }
     }
 
@@ -122,7 +124,7 @@ export class Service {
     async deleteFile (fileId) 
     {
         try {
-            await this.bucket.createFile(
+            await this.bucket.deleteFile(
                 conf.appwriteBucketId,
                 fileId
                 

@@ -8,20 +8,25 @@ import { useSelector } from 'react-redux'
 
 
 function PostForm({post}) {
+     const auth = useSelector((state) => state.auth);
+  console.log("🔥 AUTH STATE AT SUBMIT:", auth); // 👈 Add this line
+
+  const userData = auth.userData;
     const {register,handleSubmit,watch,setValue,control,getValues} = useForm({defaultValues:{
         title: post?.title || '',
-        slug: post?.slug || '',
+        slug: post?.$id || '',
         content: post?.content || '',
         status : post?.status || 'active'
     }})
  
     const navigate = useNavigate()
-    const userData =useSelector( state =>state.user.userData)
+    //const userData =useSelector( state =>state.auth?.userData)
 
     const submit = async (data) => {
+        console.log("User Data from Redux at submit time:", userData);
         if(post)
         {
-           const file = data.image[0] ? service.uploadFile(data.image[0]): null
+           const file = data.image[0] ? await service.uploadFile(data.image[0]): null
            
            if(file){
             service.deleteFile(post.featuredImage)
@@ -32,8 +37,11 @@ function PostForm({post}) {
 
            })
            
-            if(dbPost){
+            if(dbPost && dbPost.$id){
                 navigate(`/post/${dbPost.$id}`)
+            }
+            else {
+                alert('Something went wrong while updating the post. Please try again later.');
             }
         }
 
@@ -54,18 +62,23 @@ function PostForm({post}) {
         }
     }
 
-    const slugTransform = useCallback((value)=> {
-        if(value && typeof value === 'string'){
-            return value.trim().toLowerCase().replace(/^[a-zA-Z\d\s]+/g,'-').replace(/\s/g,'-')
+    const slugTransform = useCallback((value) => {
+        if (value && typeof value === 'string') {
+        return value
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')  
+            .replace(/\s+/g, '-')          
+            .replace(/-+/g, '-')           
         }
-        return ''
+        return '';
+        }, []);
 
-    },[])
 
     React.useEffect(() => {
         const subscription = watch((value , {name} )=>{
             if(name==='title'){
-                setValue('slug',slugTransform(value.title,{shoudlValidate: true }))
+                setValue('slug',slugTransform(value.title),{shoudlValidate: true })
             }
         })
 
